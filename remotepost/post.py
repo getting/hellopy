@@ -28,7 +28,7 @@ class Post():
             for line in f:
                 line = line.split(',')
                 #print(line)
-                self.data['title'], self.data['content'], self.data['tag'], self.data['post'] = line
+                self.data['title'], self.data['content'], self.data['tags'], self.data['post'] = line
                 #print(data)
                 self.post(self.data)
                 self.number += 1
