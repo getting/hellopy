@@ -1,1 +1,4 @@
 每条数据一行，列之间用逗号分隔
+
+格式:
+ck,note_id,note_title,note_text,author_tags,author_tags_clone,note_privacy,note_submit

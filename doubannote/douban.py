@@ -1,3 +1,9 @@
+"""模拟登陆豆瓣，并批量发布豆瓣日记
+需要手动从浏览器获取cookie
+需要批量上传的数据放到note.txt,每行一条，列之间用逗号分隔
+"""
+
+
 from urllib.request import urlopen, Request, HTTPError
 import urllib.parse
 
