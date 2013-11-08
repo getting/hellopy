@@ -64,7 +64,7 @@ urls = 'http://114.251.10.55/GWISWeb/tbBusGasStationList/save'
 
 #header头信息，cookie 值需要手动从浏览器登录获取
 header = {
-    'Cookie': '请登录后从浏览器手动获取需要填写',
+    'Cookie': '',
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) '
                   'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36'
 }
