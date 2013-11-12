@@ -5,7 +5,7 @@ from urllib.request import *
 ui = 'http://www.36kr.com/p/'
 
 pattern = re.compile('<h1 class="entry-title sep10">(.*?)</h1>', re.DOTALL)
-f = open('36kr.html', 'a')
+f = open('36kr/36kr.html', 'a')
 for i in range(206900, 206954):
     url = ui + str(i) + '.html'
     try:
