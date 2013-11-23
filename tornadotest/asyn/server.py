@@ -1,3 +1,7 @@
+"""模拟外部资源服务器
+
+"""
+
 import time
 import tornado.web
 import tornado.httpserver
@@ -10,6 +14,7 @@ class IndexHandler(tornado.web.RequestHandler):
             'name': 'jim',
             'age': 20,
         }
+        #模拟阻塞
         time.sleep(10)
         self.write(data)
 
