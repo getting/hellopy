@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 
 url = "http://jandan.net/ooxx/page-"
-num = 1
+num = 0
 for i in range(0, 987):
     r = urlopen(url + str(i)).read().decode()
     b = BeautifulSoup(r)

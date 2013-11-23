@@ -1,7 +1,8 @@
-from urllib.request import urlopen, HTTPError
 import tornado.ioloop
 import tornado.httpserver
 import tornado.web
+from tornado import httpclient
+import time
 
 
 class Application(tornado.web.Application):
@@ -19,18 +20,24 @@ class Application(tornado.web.Application):
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
+        print("index get")
         self.render('index.html')
 
 
 class BitNowHandler(tornado.web.RequestHandler):
+    #@tornado.web.asynchronous
     def get(self):
-        try:
-            r = urlopen('http://blockchain.info/ticker')
-            data = r.read().decode()
-            r.close()
-            self.write(str(data))
-        except HTTPError as err:
-            print(err)
+        print('now get')
+        client = httpclient.HTTPClient()
+        #client.fetch('http://blockchain.info/ticker', callback=self.on_response)
+        response = client.fetch('http://blockchain.info/ticker')
+        data = response.body.decode()
+        self.write(str(data))
+
+    def on_response(self, response):
+        data = response.body.decode()
+        self.write(str(data))
+        self.finish()
 
 
 if __name__ == "__main__":
