@@ -24,6 +24,7 @@ class BaiduTranslate():
         self.fm = fm
         #目标语言语种
         self.to = to
+        #要翻译的原文
         self.q = q
 
     def get_url(self):
@@ -42,15 +43,15 @@ class BaiduTranslate():
         self.fm = fm
         self.to = to
         self.q = q
-        url = self.get_url()
-        response = urlopen(url)
+        response = urlopen(self.get_url())
         result = json.loads(response.read().decode())
-
-        print(result['trans_result'][0]['dst'])
+        if result.get('error_code', None):
+            #当发生错误是抛出异常
+            raise Exception(result['error_msg'])
+        else:
+            return result['trans_result'][0]['dst']
 
 
 if __name__ == '__main__':
-    t = BaiduTranslate('OwbgTepPkzjNwRlfUFCAbNGM')
-    t.translate("hello world,"
-                "just")
-    print(t.get_url())
+    t = BaiduTranslate('填入你的api key').translate('hello world')
+    print(t)
