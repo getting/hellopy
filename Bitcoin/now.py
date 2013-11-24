@@ -2,7 +2,6 @@ import tornado.ioloop
 import tornado.httpserver
 import tornado.web
 from tornado import httpclient
-import time
 
 
 class Application(tornado.web.Application):
@@ -25,14 +24,19 @@ class IndexHandler(tornado.web.RequestHandler):
 
 
 class BitNowHandler(tornado.web.RequestHandler):
-    #@tornado.web.asynchronous
+
+    @tornado.web.asynchronous
     def get(self):
-        print('now get')
-        client = httpclient.HTTPClient()
-        #client.fetch('http://blockchain.info/ticker', callback=self.on_response)
-        response = client.fetch('http://blockchain.info/ticker')
-        data = response.body.decode()
-        self.write(str(data))
+        #异步
+        client = httpclient.AsyncHTTPClient()
+        client.fetch('http://blockchain.info/ticker', callback=self.on_response)
+
+        #同步
+        #client = httpclient.HTTPClient()
+        #response = client.fetch('http://blockchain.info/ticker')
+        #data = response.body.decode()
+        #self.write(str(data))
+        #self.finish()
 
     def on_response(self, response):
         data = response.body.decode()
