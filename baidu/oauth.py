@@ -1,3 +1,4 @@
+from urllib.parse import urlencode
 import tornado.web
 import tornado.httpserver
 import tornado.ioloop
@@ -10,15 +11,24 @@ class IndexHandler(tornado.web.RequestHandler):
 
 class LoginHandler(tornado.web.RequestHandler):
     def get(self):
-        authurl = """
-            https://openapi.baidu.com/oauth/2.0/authorize?
-            response_type=token&
-            client_id=OwbgTepPkzjNwRlfUFCAbNGM&
-            redirect_uri=oob&
-            scope=email&
-            display=popup&
-            state=xxx"""
-        self.write(authurl)
+        url = 'https://openapi.baidu.com/oauth/2.0/authorize?'
+        data = {
+            'client_id': '',
+            'response_type': 'code',
+            #todo 本地回调地址？
+            'redirect_uri': '',
+        }
+        url = url + urlencode(data)
+        self.write(url)
+
+
+class AuthHandler(tornado.web.RequestHandler):
+    def get(self):
+        code = self.get_argument('code', '')
+        if code:
+            self.write(str(code))
+        else:
+            self.write('no code')
 
 
 if __name__ == '__main__':
@@ -26,6 +36,7 @@ if __name__ == '__main__':
         handlers=[
             (r'/', IndexHandler),
             (r'/login', LoginHandler),
+            (r'/auth', AuthHandler),
         ]
     )
 
