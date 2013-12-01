@@ -1,3 +1,7 @@
+"""豆瓣FM
+
+"""
+
 from urllib.request import urlopen, HTTPError
 from urllib import parse
 from json import JSONDecoder
@@ -35,6 +39,9 @@ class Fm():
             print(err)
 
     def get_channel_list(self):
+        """获取频道列表
+
+        """
         try:
             r = urlopen(self.channel_list_url)
             json = JSONDecoder()
