@@ -42,9 +42,9 @@ class Fm():
         except HTTPError as err:
             print(err)
 
-fm = Fm('', '')
 
-channels = fm.channel_list['channels']
-
-for channel in channels:
-    print(channel)
+if __name__ == '__main__':
+    fm = Fm('imaguowei@gmail.com', '')
+    channels = fm.channel_list['channels']
+    for channel in channels:
+        print(channel)
