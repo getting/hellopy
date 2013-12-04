@@ -6,16 +6,23 @@ from urllib.request import urlopen
 
 
 class Weather():
+    """百度天气查询api接口
+
+    """
+    #api接口地址
     API_URL = 'http://api.map.baidu.com/telematics/v3/weather?'
 
-    def __init__(self, ak):
+    def __init__(self, ak, output='json'):
         self.ak = ak
+        self.output = output
 
-    def get_weather(self, location='济南', output='json'):
+    def get_weather(self, location='济南'):
+        """获取城市天气
+        """
         data = {
             'location': location,
-            'output': output,
-            'ak': self.ak
+            'output': self.output,
+            'ak': self.ak,
         }
 
         url = Weather.API_URL + urlencode(data)
