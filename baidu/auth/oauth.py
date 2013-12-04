@@ -1,3 +1,7 @@
+"""oauth 获取token
+
+"""
+
 import json
 import os.path
 from urllib.request import urlopen
@@ -14,7 +18,7 @@ client_secret = '需要填写'
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        self.write('hello')
+        self.write('ok')
 
 
 class LoginHandler(tornado.web.RequestHandler):
