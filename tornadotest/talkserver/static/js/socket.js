@@ -20,7 +20,7 @@ function init() {
     }
 
     socket.onerror = function(event){
-
+        socket.send('some error');
     }
 
     socket.onmessage = function(event){
