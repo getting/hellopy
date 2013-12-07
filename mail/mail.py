@@ -31,4 +31,4 @@ class Mail():
 
 if __name__ == '__main__':
     mail = Mail('admin@maguowei.com', '')
-    mail.send('imaguowei@gmail.com', 'hello wordt')
+    mail.send('imaguowei@gmail.com', 'hello word')
