@@ -5,16 +5,17 @@ import tornado.ioloop
 
 
 class TalkHandler(tornado.websocket.WebSocketHandler):
-    message = []
+    #记录连接的客户端
+    clients = []
 
     def open(self):
+        TalkHandler.clients.append(self)
         self.write_message('已与服务器建立连接')
 
     def on_message(self, message):
-        self.message.append(message)
-        for msg in self.message:
-            self.write_message(msg)
-            print(message)
+        #向每一个连接的客户端广播消息
+        for c in TalkHandler.clients:
+            c.write_message(message)
 
     def on_close(self):
         self.write_message('已与服务器断开连接')

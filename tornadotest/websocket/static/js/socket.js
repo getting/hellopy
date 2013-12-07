@@ -31,8 +31,4 @@ function init() {
         document.body.insertBefore(div, input);
         input.scrollIntoView();
     }
-
-}
-window.onclose = function(){
-    alert('hello world');
 }
