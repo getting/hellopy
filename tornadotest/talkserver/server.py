@@ -17,18 +17,18 @@ class TalkHandler(tornado.websocket.WebSocketHandler):
 
     def open(self):
         TalkHandler.clients.append(self)
-        self.send_to_all(str(id(self)) + ' 加入聊天')
+        TalkHandler.send_to_all(str(id(self)) + ' 加入聊天')
         self.write_message('已与服务器建立连接')
 
     def on_message(self, message):
-        self.send_to_all(message)
+        TalkHandler.send_to_all(message)
 
     def on_close(self):
-        self.send_to_all(str(id(self)) + '退出聊天')
-        self.write_message('已与服务器断开连接')
         TalkHandler.clients.remove(self)
+        TalkHandler.send_to_all(str(id(self)) + '退出聊天')
 
-    def send_to_all(self, message):
+    @staticmethod
+    def send_to_all(message):
         """广播消息
         """
         #向每一个连接的客户端广播消息
