@@ -4,7 +4,7 @@ function init() {
     var username = prompt("输入用户名")
     var webSocketUri = "ws://localhost:10005/talk";
     var input = document.getElementById('input');
-    socket = new WebSocket(webSocketUri);
+    var socket = new WebSocket(webSocketUri);
 
     input.onchange = function(){
         var message = username + ':' + input.value;
