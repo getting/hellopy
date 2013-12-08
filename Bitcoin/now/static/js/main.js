@@ -1,6 +1,6 @@
 window.onload = function(){
 
-    setInterval(getBitcoinNow, 1000);
+    setInterval(getBitcoinNow, 2500);
 
     function getBitcoinNow(){
         var url = "/now";

@@ -19,7 +19,6 @@ class Application(tornado.web.Application):
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        print("index get")
         self.render('index.html')
 
 

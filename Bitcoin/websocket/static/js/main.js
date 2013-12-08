@@ -3,7 +3,11 @@ window.onload = function(){
     var socket = new WebSocket(url);
 
     socket.onopen = function(event){
-        socket.send('hello')
+        setInterval(send, 1000);
+    }
+
+    function send(){
+        socket.send('hello');
     }
 
     socket.onclose = function(event){

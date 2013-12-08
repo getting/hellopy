@@ -2,6 +2,7 @@ import tornado.ioloop
 import tornado.httpserver
 import tornado.web
 import tornado.websocket
+import tornado.gen
 from tornado import httpclient
 
 
@@ -20,7 +21,7 @@ class Application(tornado.web.Application):
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render('websocket.html')
+        self.render('index.html')
 
 
 class BitNowHandler(tornado.websocket.WebSocketHandler):
@@ -31,8 +32,13 @@ class BitNowHandler(tornado.websocket.WebSocketHandler):
         print(str(id(self)) + '建立连接')
         BitNowHandler.clients.append(self)
 
+    @tornado.gen.engine
+    @tornado.web.asynchronous
     def on_message(self, message):
-        BitNowHandler.send_to_all(BitNowHandler.data)
+            client = httpclient.AsyncHTTPClient()
+            response = yield tornado.gen.Task(client.fetch, 'http://blockchain.info/ticker')
+            BitNowHandler.data = response.body.decode()
+            BitNowHandler.send_to_all(BitNowHandler.data)
 
     @staticmethod
     def send_to_all(message):
@@ -42,12 +48,6 @@ class BitNowHandler(tornado.websocket.WebSocketHandler):
     def on_close(self):
         print(str(id(self)) + '退出连接')
         BitNowHandler.clients.remove(self)
-
-    def fetch(self):
-        client = httpclient.HTTPClient()
-        response = client.fetch('http://blockchain.info/ticker')
-        data = response.body.decode()
-        return str(data)
 
 
 if __name__ == "__main__":
