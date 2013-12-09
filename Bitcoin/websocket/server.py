@@ -35,10 +35,10 @@ class BitNowHandler(tornado.websocket.WebSocketHandler):
     @tornado.gen.engine
     @tornado.web.asynchronous
     def on_message(self, message):
-            client = httpclient.AsyncHTTPClient()
-            response = yield tornado.gen.Task(client.fetch, 'http://blockchain.info/ticker')
-            BitNowHandler.data = response.body.decode()
-            BitNowHandler.send_to_all(BitNowHandler.data)
+        client = httpclient.AsyncHTTPClient()
+        response = yield tornado.gen.Task(client.fetch, 'http://blockchain.info/ticker')
+        BitNowHandler.data = response.body.decode()
+        BitNowHandler.send_to_all(BitNowHandler.data)
 
     @staticmethod
     def send_to_all(message):
