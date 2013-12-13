@@ -34,6 +34,7 @@ class TalkHandler(tornado.websocket.WebSocketHandler):
         #向每一个连接的客户端广播消息
         for c in TalkHandler.clients:
             c.write_message(datetime.now().strftime('time:%H:%M:%S:') + message)
+            print(message)
 
 
 setting = {
