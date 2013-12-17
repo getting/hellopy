@@ -9,7 +9,6 @@ var lineChartData = {
 			data : []
 		}
     ]
-
 }
 
 var xmlhttp = new XMLHttpRequest();
