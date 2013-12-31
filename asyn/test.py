@@ -1,33 +1,35 @@
 """tornado异步测试
 server.py 模拟外部资源提供服务器
-当该资源时仍可以相应新的请求 /test
 
 """
 
 import tornado.web
 import tornado.httpserver
 import tornado.ioloop
-from tornado.httpclient import AsyncHTTPClient
+import tornado.gen
+from tornado.httpclient import AsyncHTTPClient, HTTPClient
 
 
 class IndexHandler(tornado.web.RequestHandler):
-    @tornado.web.asynchronous
+    @tornado.gen.coroutine
     def get(self):
-        self.write('hello')
-        print('index start')
-        client = AsyncHTTPClient()
-        client.fetch('http://localhost:10002', callback=self.on_response)
+        url = 'http://localhost:10002'
 
-    def on_response(self, response):
+        #同步
+        client = HTTPClient()
+        response = client.fetch(url)
+
+        #异步
+        # client = AsyncHTTPClient()
+        # response = yield tornado.gen.Task(client.fetch, url)
+
         self.write(response.body.decode())
-        print('index ok')
         self.finish()
 
 
 class TestHandler(tornado.web.RequestHandler):
     def get(self):
         self.write('test is ok')
-        print('test is ok')
 
 if __name__ == '__main__':
     app = tornado.web.Application(
