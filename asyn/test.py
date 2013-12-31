@@ -7,7 +7,7 @@ server.py 模拟外部资源提供服务器
 import tornado.web
 import tornado.httpserver
 import tornado.ioloop
-from tornado.httpclient import AsyncHTTPClient, HTTPClient
+from tornado.httpclient import AsyncHTTPClient
 
 
 class IndexHandler(tornado.web.RequestHandler):

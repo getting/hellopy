@@ -1,3 +1,4 @@
+import time
 import tornado.ioloop
 import tornado.httpserver
 import tornado.web
@@ -25,35 +26,35 @@ class IndexHandler(tornado.web.RequestHandler):
         self.render('index.html')
 
 
-class BitNowHandler(tornado.web.RequestHandler):
-    """使用回调产生实现异步
-
-    """
-    @tornado.web.asynchronous
+class ChartHandler(tornado.web.RequestHandler):
     def get(self):
-        #异步
-        client = httpclient.AsyncHTTPClient()
-        client.fetch('http://blockchain.info/ticker', callback=self.on_response)
+        self.render('chart.html')
 
-        #同步
-        #client = httpclient.HTTPClient()
-        #response = client.fetch('http://blockchain.info/ticker')
-        #data = response.body.decode()
-        #self.write(str(data))
-        #self.finish()
 
-    def on_response(self, response):
-        data = response.body.decode()
-        self.write(str(data))
+class BitNowHandler(tornado.web.RequestHandler):
+    count = 0
+    last_time = int(time.time())
+    data = ''
+
+    @tornado.gen.coroutine
+    def get(self):
+        """每隔5秒重新获取一次数据"""
+        now_time = int(time.time())
+        if now_time - BitNowHandler.last_time >= 5:
+            BitNowHandler.last_time = now_time
+            BitNowHandler.count += 1
+            print(BitNowHandler.count)
+            client = httpclient.AsyncHTTPClient()
+            url = 'http://blockchain.info/ticker'
+            response = yield gen.Task(client.fetch, url)
+            BitNowHandler.data = response.body.decode()
+        print(str(BitNowHandler.data))
+        self.write(str(BitNowHandler.data))
         self.finish()
 
 
 class ChartApiHandler(tornado.web.RequestHandler):
-    """采用异步生成器
-
-    """
-    @tornado.web.asynchronous
-    @tornado.gen.engine
+    @tornado.gen.coroutine
     def get(self):
         url = 'http://blockchain.info/charts/market-price?format=json'
         client = httpclient.AsyncHTTPClient()
@@ -61,11 +62,6 @@ class ChartApiHandler(tornado.web.RequestHandler):
         data = response.body.decode()
         self.write(data)
         self.finish()
-
-
-class ChartHandler(tornado.web.RequestHandler):
-    def get(self):
-        self.render('chart.html')
 
 
 if __name__ == "__main__":

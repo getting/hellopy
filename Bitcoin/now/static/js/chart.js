@@ -31,7 +31,7 @@ function chart_now(){
     xmlhttp.send();
 }
 
-chart_now()
-//setInterval(chart_now, 1000);
+//chart_now()
+setInterval(chart_now, 2000);
 
 
