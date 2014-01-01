@@ -28,26 +28,33 @@ class Create():
 
 
 class Field():
+    field_type = 'varchar'
+
+    def __init__(self, default):
+        self.default = default
+
+
+class CharField(Field):
+    field_type = 'varchar'
+
+
+class IntField(Field):
+    field_type = 'int'
+
+
+class TextField(Field):
+    field_type = 'text'
+
+
+class DataTimeField(Field):
+    field_type = 'datetime'
+
+
+class PrimaryKey(Field):
     pass
 
 
-class CharField():
-    pass
-
-
-class IntField():
-    pass
-
-
-class TextField():
-    pass
-
-
-class DataTimeField():
-    pass
-
-
-class ForeignKeyField():
+class ForeignKeyField(Field):
     pass
 
 
