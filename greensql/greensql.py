@@ -74,5 +74,9 @@ class Model():
     def order_by(self):
         pass
 
-    def limit(self):
+    def limit(self, start=0, number=1):
         pass
+
+
+class SelectObject():
+    pass
