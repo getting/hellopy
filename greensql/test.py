@@ -1,4 +1,7 @@
-from .greensql import *
+if __name__ == '__main__':
+    from greensql import *
+else:
+    from .greensql import *
 
 
 class User(Model):
@@ -6,4 +9,7 @@ class User(Model):
     password = CharField()
     email = CharField()
     reg_date = DataTimeField()
+
+
+User()
 

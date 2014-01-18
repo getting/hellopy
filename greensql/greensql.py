@@ -30,7 +30,7 @@ class Create():
 class Field():
     field_type = 'varchar'
 
-    def __init__(self, default):
+    def __init__(self, default=''):
         self.default = default
 
 
@@ -59,7 +59,7 @@ class ForeignKeyField(Field):
 
 
 class Model():
-    def select(self):
+    def select(self, sql):
         pass
 
     def fm(self):

@@ -37,4 +37,3 @@ if __name__ == '__main__':
     print(person.get_image())
     print(person.get_page())
     print(person.get_profile_data())
-
