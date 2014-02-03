@@ -1,5 +1,12 @@
 import mysql.connector
 
+__version__ = 0.1
+__author__ = 'MGW'
+
+
+def get_version():
+    return __version__
+
 
 class GreenSql():
     def __init__(self, host, user, password, database, autocommit=True, buffered=True):
@@ -50,6 +57,10 @@ class DataTimeField(Field):
     field_type = 'datetime'
 
 
+class EmailField(Field):
+    field_type = 'email'
+
+
 class PrimaryKey(Field):
     pass
 
@@ -77,6 +88,23 @@ class Model():
     def limit(self, start=0, number=1):
         pass
 
+    def create_table(self):
+        CreateTable().create_table(self)
+
 
 class SelectObject():
     pass
+
+
+class CreateTable():
+    table_name = ''
+
+    def __init__(self):
+        pass
+
+    def create_table_sql(self):
+        pass
+
+    def create_table(self, model):
+        table_name = model.__class__.__name__.lower()
+        print(model.__dict__.keys())

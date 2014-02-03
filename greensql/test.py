@@ -11,5 +11,5 @@ class User(Model):
     reg_date = DataTimeField()
 
 
-User()
+User().create_table()
 
