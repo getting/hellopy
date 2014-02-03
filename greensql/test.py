@@ -4,6 +4,9 @@ else:
     from .greensql import *
 
 
+GreenSql('localhost', 'root', 'root', 'test')
+
+
 class User(Model):
     username = CharField()
     password = CharField()
@@ -12,4 +15,3 @@ class User(Model):
 
 
 User().create_table()
-
