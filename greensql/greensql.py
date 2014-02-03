@@ -24,11 +24,10 @@ class GreenSql():
     @staticmethod
     def get_connect():
         if not GreenSql.conn:
-            raise Error('数据库连接错误')
+            raise Error('database connect error!')
         return GreenSql.conn
 
     def _connect(self):
-        print('connected')
         return mysql.connector.connect(host=self.host, user=self.user, password=self.password, database=self.database,
                                        autocommit=self.autocommit, buffered=self.buffered)
 
@@ -37,33 +36,79 @@ class GreenSql():
 
 
 class Model():
-
     def __init__(self):
         self.db = GreenSql.get_connect()
+        self.select_object = SelectObject(self)
 
-    def select(self, sql):
+    def select(self, sql=''):
+        cur = self.db.cursor()
+        print(self.select_object.get_sql())
+        cur.execute(self.select_object.get_sql())
+        # cur.execute('SELECT * FROM user')
+        print(cur.fetchone())
+        cur.close()
+
+    def insert(self, sql=''):
         pass
 
-    def fm(self):
+    def update(self, sql=''):
         pass
 
-    def where(self):
+    def delete(self, sql=''):
         pass
+
+    def fm(self, fm):
+        self.select_object.fm = fm
+
+    def where(self, where):
+        self.select_object.where = where
 
     def join(self):
         pass
 
-    def order_by(self):
+    def order_by(self, order):
         pass
 
     def limit(self, start=0, number=1):
-        pass
+        self.select_object.limit = (start, number)
 
     def create_table(self):
         CreateTable().create_table(self)
 
 
-class SelectObject():
+class SqlObject():
+    def __init__(self, model):
+        self.table_name = model.__class__.__name__.lower()
+
+
+class SelectObject(SqlObject):
+    def __init__(self, model):
+        self.fm = ''
+        self.where = ''
+        self.limit = ''
+        self.sql = ''
+        super.__init__(model)
+
+    def get_sql(self):
+        self.sql += 'SELECT * FROM '
+        if not self.fm:
+            self.fm = self.table_name
+        self.sql += self.fm
+        return self.sql
+
+    def __str__(self):
+        return 'SelectObject:' + self.sql
+
+
+class DeleteObject(SqlObject):
+    pass
+
+
+class UpdateObject(SqlObject):
+    pass
+
+
+class InsertObject(SqlObject):
     pass
 
 
@@ -112,5 +157,4 @@ class CreateTable():
         pass
 
     def create_table(self, model):
-        table_name = model.__class__.__name__.lower()
-        print(model.__dict__.keys())
+        self.table_name = model.__class__.__name__.lower()

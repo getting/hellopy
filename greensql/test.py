@@ -15,3 +15,4 @@ class User(Model):
 
 
 User().create_table()
+User().select()
