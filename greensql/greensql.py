@@ -43,8 +43,8 @@ class Model():
     def select(self, sql=''):
         cur = self.db.cursor()
         print(self.select_object.get_sql())
-        cur.execute(self.select_object.get_sql())
         # cur.execute('SELECT * FROM user')
+        cur.execute(self.select_object.get_sql())
         print(cur.fetchone())
         cur.close()
 
@@ -80,6 +80,9 @@ class SqlObject():
     def __init__(self, model):
         self.table_name = model.__class__.__name__.lower()
 
+    def __str__(self):
+        return self.__class__.__name__ + '@' + self.sql
+
 
 class SelectObject(SqlObject):
     def __init__(self, model):
@@ -87,17 +90,14 @@ class SelectObject(SqlObject):
         self.where = ''
         self.limit = ''
         self.sql = ''
-        super.__init__(model)
+        SqlObject.__init__(self, model)
 
     def get_sql(self):
-        self.sql += 'SELECT * FROM '
+        self.sql = 'SELECT * FROM '
         if not self.fm:
             self.fm = self.table_name
         self.sql += self.fm
         return self.sql
-
-    def __str__(self):
-        return 'SelectObject:' + self.sql
 
 
 class DeleteObject(SqlObject):
