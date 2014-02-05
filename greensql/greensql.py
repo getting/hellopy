@@ -40,28 +40,40 @@ class Model():
         self.db = GreenSql.get_connect()
         self.select_object = SelectObject(self)
 
-    def select(self, sql=''):
+    def get_by_id(self, mid):
+        self.where('id =' + str(mid))
+        return self.find_one()
+
+    def find_one(self):
         cur = self.db.cursor()
-        print(self.select_object.get_sql())
-        # cur.execute('SELECT * FROM user')
         cur.execute(self.select_object.get_sql())
-        print(cur.fetchone())
+        result = cur.fetchone()
         cur.close()
+        return result
 
-    def insert(self, sql=''):
+    def select(self):
+        cur = self.db.cursor()
+        cur.execute(self.select_object.get_sql())
+        result = cur.fetchall()
+        cur.close()
+        return result
+
+    def insert(self):
         pass
 
-    def update(self, sql=''):
+    def update(self):
         pass
 
-    def delete(self, sql=''):
+    def delete(self):
         pass
 
     def fm(self, fm):
         self.select_object.fm = fm
+        return self
 
     def where(self, where):
-        self.select_object.where = where
+        self.select_object.where = ' WHERE ' + where
+        return self
 
     def join(self):
         pass
@@ -69,19 +81,31 @@ class Model():
     def order_by(self, order):
         pass
 
-    def limit(self, start=0, number=1):
-        self.select_object.limit = (start, number)
+    def limit(self, start=1, number=''):
+        if number:
+            limit = ' LIMIT ' + str(start) + ', ' + str(number)
+        else:
+            limit = ' LIMIT ' + str(start)
+        self.select_object.limit = limit
+        return self
 
     def create_table(self):
         CreateTable().create_table(self)
+
+    def __str__(self):
+        return str(self.select_object)
 
 
 class SqlObject():
     def __init__(self, model):
         self.table_name = model.__class__.__name__.lower()
 
+    def get_sql(self):
+        pass
+
     def __str__(self):
-        return self.__class__.__name__ + '@' + self.sql
+        """打印类名和生成的sql语句"""
+        return self.__class__.__name__ + '@' + self.get_sql()
 
 
 class SelectObject(SqlObject):
@@ -97,6 +121,10 @@ class SelectObject(SqlObject):
         if not self.fm:
             self.fm = self.table_name
         self.sql += self.fm
+        if self.where:
+            self.sql += self.where
+        if self.limit:
+            self.sql += self.limit
         return self.sql
 
 

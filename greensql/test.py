@@ -14,5 +14,7 @@ class User(Model):
     reg_date = DataTimeField()
 
 
-User().create_table()
-User().select()
+# User().create_table()
+u = User().fm('post')
+print(u)
+# print(User().get_by_id(2))
