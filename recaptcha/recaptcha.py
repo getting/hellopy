@@ -1,3 +1,8 @@
+"""tornado 上使用reCaptcha示例
+吐槽：reCaptcha难度实在太高，太难分辨了
+"""
+
+
 from urllib.request import urlopen
 from urllib.parse import urlencode
 import tornado.httpserver
@@ -29,7 +34,7 @@ class IndexHandler(tornado.web.RequestHandler):
         response = self.get_argument('recaptcha_response_field')
 
         data = {
-            'privatekey': '6Lf6seoSAAAAAAQ46JYdXFoTCe81sqGl-0flrpgk',
+            'privatekey': '填入你的私钥',
             'remoteip': self.request.remote_ip,
             'challenge': challenge,
             'response': response
