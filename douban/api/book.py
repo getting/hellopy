@@ -4,14 +4,18 @@ from urllib.request import urlopen
 class Book():
     url = 'https://api.douban.com/v2/book/'
 
-    def __init__(self):
-        pass
+    def _get(self, q):
+        res = urlopen(self.url + str(q)).read().decode()
+        return res
 
     def get_book_by_id(self, bid):
-        result = urlopen(self.url + str(bid)).read().decode()
-        print(result)
+        return self._get(bid)
+
+    def get_book_by_isbn(self, isbn):
+        self.url += 'isbn/'
+        return self._get(isbn)
 
 
 if __name__ == '__main__':
-    Book().get_book_by_id(1003078)
-
+    print(Book().get_book_by_id(1003078))
+    print(Book().get_book_by_isbn(9787544708531))
