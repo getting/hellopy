@@ -1,5 +1,8 @@
-"""tornado 上使用reCaptcha示例
-吐槽：reCaptcha难度实在太高，太难分辨了
+"""tornado 上应用 reCaptcha 示例
+[reCaptcha](http://zh.wikipedia.org/wiki/ReCAPTCHA)
+[reCaptcha Doc](https://developers.google.com/recaptcha/intro)
+
+吐槽：reCaptcha难度实在太高，智商捉急
 """
 
 
@@ -10,6 +13,11 @@ import tornado.ioloop
 import tornado.web
 
 
+#获取key: https://www.google.com/recaptcha/whyrecaptcha
+publickey = '输入你的 public key'
+privatekey = '输入你的 private key'
+
+
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
@@ -17,7 +25,6 @@ class Application(tornado.web.Application):
         ]
         settings = dict(
             template_path="templates",
-            static_path="static",
         )
 
         tornado.web.Application.__init__(self, handlers, **settings)
@@ -25,28 +32,29 @@ class Application(tornado.web.Application):
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self):
-        self.render('index.html')
+        self.render('index.html', publickey=publickey)
 
     def post(self):
         url = 'http://www.google.com/recaptcha/api/verify'
 
+        #验证码
         challenge = self.get_argument('recaptcha_challenge_field')
+        #用户输入
         response = self.get_argument('recaptcha_response_field')
 
         data = {
-            'privatekey': '填入你的私钥',
+            'privatekey': privatekey,
             'remoteip': self.request.remote_ip,
             'challenge': challenge,
             'response': response
         }
 
         res = urlopen(url, data=urlencode(data).encode())
-        print(res.readline().decode())
+        #获取验证结果，这里直接将返回结果输出到页面
+        self.write(res.read().decode())
 
 
 if __name__ == '__main__':
     server = tornado.httpserver.HTTPServer(Application())
     server.listen(10001)
     tornado.ioloop.IOLoop.instance().start()
-
-
