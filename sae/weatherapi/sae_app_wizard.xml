@@ -1,0 +1,7 @@
+<appwizard><introduction><name></name><author>weatherapi</author><icon></icon><homepage></homepage><description><![CDATA[weather api]]></description></introduction><platform><services><service></service></services><appconfig><tpl><![CDATA[
+name: <<appname>>
+version: <<version>>
+version: 1
+...
+
+]]></tpl></appconfig></platform><code><initScript>index.php</initScript></code></appwizard>
