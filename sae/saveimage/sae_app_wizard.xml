@@ -1,0 +1,7 @@
+<appwizard><introduction><name></name><author>saveimage</author><icon></icon><homepage></homepage><description><![CDATA[文件存储]]></description></introduction><platform><services><service></service><service name="file"  params="数据存储">Storage</service><service name="file2"  params="数据存储">Storage</service><service name="file3"  params="数据存储">Storage</service><service name="file4"  params="数据存储">Storage</service><service name="file5"  params="数据存储">Storage</service></services><appconfig><tpl><![CDATA[
+name: <<appname>>
+version: <<version>>
+version: 1
+...
+
+]]></tpl></appconfig></platform><code><initScript>index.php</initScript></code></appwizard>
