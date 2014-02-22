@@ -1,4 +1,8 @@
 ---
 name: bingimage
 version: 1
+cron:
+- description: get_image_everyday
+  url: /
+  schedule: "30 17 * * *"
 ...
