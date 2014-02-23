@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>妹子图</title>
+    <link rel="stylesheet" href="http://lib.sinaapp.com/js/bootstrap/latest/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ static_url('css/main.css') }}">
+</head>
+<body>
+<div class="container">
+    <nav>
+        <div class="page-header">
+            <h1><a href="/">妹子图</a><small>一大波妹子正在涌来！</small></h1>
+        </div>
+    </nav>
+    <div class="wrap row">
+        <div class="main col-md-8">
+            <div id="container">
+                <article class="item w2">
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- ad2 -->
+                    <ins class="adsbygoogle"
+                         style="display:inline-block;width:336px;height:280px"
+                         data-ad-client="ca-pub-7388149537279492"
+                         data-ad-slot="0407016696"></ins>
+                    <script>
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </article>
+                {% for image in images %}
+                    <article class="item">
+                        <img src="{{ image }}" alt="妹子图， 美女图片">
+                    </article>
+                {% end %}
+            </div>
+        </div>
+        <div class="side col-md-4">
+            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+            <!-- ad10 -->
+            <ins class="adsbygoogle"
+                 style="display:inline-block;width:300px;height:600px"
+                 data-ad-client="ca-pub-7388149537279492"
+                 data-ad-slot="9735721717"></ins>
+            <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+            </script>
+        </div>
+    </div>
+    <div>
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- ad1 -->
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:728px;height:90px"
+             data-ad-client="ca-pub-7388149537279492"
+             data-ad-slot="6392378150"></ins>
+        <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+    <ul class="pagination">
+        <li><a href="/1">&laquo;</a></li>
+        {% for i in range(page-5 if page-5>0 else 1, page+5 if page-5>0 else 10) %}
+            {% if i == page %}
+                <li class="active"><a href="/{{ i }}">{{ i }} <span class="sr-only">(current)</span></a></li>
+            {% else %}
+                <li><a href="/{{ i }}">{{ i }}</a></li>
+            {% end %}
+        {% end %}
+         <li><a href="/3800">&raquo;</a></li>
+    </ul>
+    <hr>
+</div>
+<footer>
+     <p class="text-center">Powered By tornado</p>
+</footer>
+<script src="{{ static_url('vendor/masonry.pkgd.min.js') }}"></script>
+<script src="{{ static_url('js/main.js') }}" ></script>
+</body>
+</html>
