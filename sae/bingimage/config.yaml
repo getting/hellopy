@@ -2,7 +2,7 @@
 name: bingimage
 version: 1
 cron:
-- description: get_image_everyday
+- description: save_image_everyday
   url: /
-  schedule: "30 17 * * *"
+  schedule: "30 12 * * *"
 ...

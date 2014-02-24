@@ -15,6 +15,9 @@ class Book():
         self.url += 'isbn/'
         return self._get(isbn)
 
+    def search_book(self, name):
+        pass
+
 
 if __name__ == '__main__':
     print(Book().get_book_by_id(1003078))
