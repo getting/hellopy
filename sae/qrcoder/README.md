@@ -2,6 +2,8 @@
 
 ----
 
+![hello world](http://qrcoder.sinaapp.com/)
+
 接口地址：http://qrcoder.sinaapp.com/
 
 ## 简单使用
@@ -26,7 +28,7 @@ http://qrcoder.sinaapp.com?t=hello world&f=json
 
 返回格式：
 
-{"url": "http://qrcoder-image.stor.sinaapp.com/aGVsbG8gd29ybGQ=.png", "text": "hello world"}
+`{"url": "http://qrcoder-image.stor.sinaapp.com/aGVsbG8gd29ybGQ=.png", "text": "hello world"}`
 
 text： 输入的文本
 url： 生成二维码图片的地址
