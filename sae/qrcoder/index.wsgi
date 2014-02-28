@@ -1,5 +1,6 @@
 # coding=UTF-8
 import json
+import base64
 import qrcode
 import StringIO
 import tornado.wsgi
@@ -12,7 +13,7 @@ class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         try:
             code = StringIO.StringIO()
-            text = self.get_argument('t', 'hello world')
+            text = self.get_argument('t', 'hello world').encode('utf-8')
             format = self.get_argument('f', ' ')
 
             qr = qrcode.QRCode(
@@ -28,14 +29,14 @@ class IndexHandler(tornado.web.RequestHandler):
             img.save(code)
 
             bucket = Bucket('image')
-            image_name = text + '.png'
+            image_name = base64.urlsafe_b64encode(text) + '.png'
             bucket.put_object(image_name, code.getvalue())
             code.close()
             image_url = bucket.generate_url(image_name)
             if format == 'json':
                 self.write(json.dumps({'text': text, 'url': image_url}))
             else:
-                self.render('index.html', image = image_url)
+                self.redirect(image_url)
         except Exception as e:
             self.write(e)
 
@@ -44,7 +45,6 @@ app = tornado.wsgi.WSGIApplication(
 	handlers = [
         (r"/", IndexHandler),
     ],
-    template_path = 'templates',
 )
 
 
