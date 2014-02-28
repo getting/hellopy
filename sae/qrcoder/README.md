@@ -15,7 +15,7 @@ http://qrcoder.sinaapp.com?t=hello world
 生成的二维码中将包含'hello world'的文本信息
 
 在网页中简单引用：
-<img src="http://qrcoder.sinaapp.com?t=hello world">
+`<img src="http://qrcoder.sinaapp.com?t=hello world">`
 
 
 ## 进阶使用
