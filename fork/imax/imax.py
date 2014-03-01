@@ -1,3 +1,9 @@
+""" Fork IMax
+
+@date 2014-03-1
+"""
+
+
 from urllib.request import urlopen
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
@@ -19,6 +25,7 @@ class IMax():
                 restlt = BeautifulSoup(response.read())
                 title = restlt.title.string
                 #title[:title.find('|')]
+                movie['id'] = i
                 movie['title'] = title.strip('| 高清 BT下载,电驴下载,迅雷下载,在线观看 | IMAX.im')
                 table = restlt.find('table', class_='table table-striped table-condensed')
                 trs = table.select('tbody tr')
@@ -40,8 +47,9 @@ class IMax():
             except HTTPError as e:
                 self.error_number += 1
                 print(i, e)
-
-        print(self.error_number)
+        print('*'*100)
+        print('发生错误:', self.error_number, '条')
+        print('*'*100)
 
 
 if __name__ == '__main__':
