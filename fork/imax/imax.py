@@ -13,26 +13,30 @@ class IMax():
 
     def fork(self):
         for i in range(self.start, self.end):
+            movie = dict()
             try:
                 response = urlopen(self.url + str(i))
                 restlt = BeautifulSoup(response.read())
                 title = restlt.title.string
-                #print(i, 'success', title[:title.find('|')])
-                print(i, 'success', title.strip('| 高清 BT下载,电驴下载,迅雷下载,在线观看 | IMAX.im'))
+                #title[:title.find('|')]
+                movie['title'] = title.strip('| 高清 BT下载,电驴下载,迅雷下载,在线观看 | IMAX.im')
                 table = restlt.find('table', class_='table table-striped table-condensed')
                 trs = table.select('tbody tr')
+                download = list()
                 for tr in trs:
                     tds = tr.find_all('td')
+                    li = dict()
                     for td in tds:
                         if td['class'][0] == 'qu':
-                            print(td.string.strip())
+                            li['format'] = td.string.strip()
                         elif td['class'][0] == 'size':
-                            print(td.span.string)
+                            li['size'] = td.span.string
                         elif td['class'][0] == 'name':
-                            print(td.a.string)
-                            print(td.a['href'])
-
-                    print('>>>>>>>>>>>>')
+                            li['name'] = td.a.string
+                            li['href'] = td.a['href']
+                    download.append(li)
+                movie['download'] = download
+                print(movie)
             except HTTPError as e:
                 self.error_number += 1
                 print(i, e)
