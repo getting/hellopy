@@ -44,6 +44,9 @@ class IMax():
                     download.append(li)
                 movie['download'] = download
                 print(movie)
+            except AttributeError as attrerr:
+                self.error_number += 1
+                print(i, attrerr)
             except HTTPError as e:
                 self.error_number += 1
                 print(i, e)
