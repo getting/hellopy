@@ -8,7 +8,6 @@ from pymongo import MongoClient
 class Mov():
     client = MongoClient()
     movie = client.bastogne.movie
-    pid = 1
 
     def change_id(self):
         cursor = self.movie.find()

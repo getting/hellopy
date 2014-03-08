@@ -18,8 +18,6 @@ class Movie():
         return json.loads(response.read().decode())
 
     def search_by_name(self, name):
-        """只返回一个条目
-        """
         data = {
             'q': name,
             'start': 0,
@@ -30,7 +28,9 @@ class Movie():
         response = urlopen(url)
         return json.loads(response.read().decode())
 
-    def get_movie(self, name):
+    def get_movie_by_name(self, name):
+        """结果不可靠
+        """
         movie_id = self.search_by_name(name)['subjects'][0]['id']
         result = self.get_subject_by_id(movie_id)
         return result
@@ -38,5 +38,5 @@ class Movie():
 
 if __name__ == '__main__':
     movie = Movie()
-    m = movie.get_movie('色,戒')
+    m = movie.get_movie_by_name('色,戒')
     print(m)
