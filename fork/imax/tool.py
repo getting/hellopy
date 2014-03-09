@@ -7,7 +7,7 @@ from pymongo import MongoClient
 
 class Mov():
     client = MongoClient()
-    movie = client.bastogne.movie
+    movie = client.movie.post
 
     def change_id(self):
         cursor = self.movie.find()

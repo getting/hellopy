@@ -63,5 +63,5 @@ class IMax():
 
 
 if __name__ == '__main__':
-    imax = IMax(6000, 8000)
+    imax = IMax(0, 46000)
     imax.fork()
