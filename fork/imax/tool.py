@@ -13,7 +13,7 @@ class Mov():
         cursor = self.movie.find()
         for pid, post in enumerate(cursor):
             print(post['id'], pid+1)
-            self.movie.update({'id': post['id']}, {'$set': {'id': pid+1}})
+            self.movie.update({'_id': post['_id']}, {'$set': {'id': pid+1}})
 
 
 if __name__ == '__main__':
