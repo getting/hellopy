@@ -1,6 +1,5 @@
-from urllib.request import urlopen, HTTPError
+from urllib.request import urlopen, Request, HTTPError
 from bs4 import BeautifulSoup
-from mysql.connector import connect
 
 
 class Quibai():
@@ -24,8 +23,10 @@ class Quibai():
         url = self.url + url
         for self.start in range(self.end):
             page_url = url + str(self.start)
+            r = Request(page_url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) '
+                  'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36'})
             try:
-                response = urlopen(page_url)
+                response = urlopen(r)
                 result = BeautifulSoup(response.read())
                 contents = result.find_all(class_='content')
                 for c in contents:
@@ -50,12 +51,6 @@ class Quibai():
     def fork_month(self):
         self.fork(url='month/page/')
 
-    def save(self, content, image):
-        sql = 'INSERT INTO `post` (`content`, `image`) VALUES (%s, %s)'
-
-    def get_connect(self):
-        conn = connect(host='localhost', user='root', password='root', buffered=True, autocommit=True)
-        return conn
 
 if __name__ == '__main__':
     qiubai = Quibai()
