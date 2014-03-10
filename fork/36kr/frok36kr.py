@@ -4,7 +4,7 @@ import re
 
 ui = 'http://www.36kr.com/p/'
 
-pattern = re.compile('<h1 class="entry-title sep10">(.*?)</h1>', re.DOTALL)
+pattern = re.compile('<h1 class="single-post__title">(.*?)</h1>', re.DOTALL)
 for i in range(206900, 206954):
     url = ui + str(i) + '.html'
     try:

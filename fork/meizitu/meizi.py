@@ -1,5 +1,4 @@
 from urllib.request import urlopen
-from urllib.parse import urlencode
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
 
@@ -15,11 +14,10 @@ for i in range(997, 1058):
             num += 1
             print(i, num, img['src'])
 
-            #存储到SAE
             data = {
                 'name': str(num) + '.jpg',
                 'url': img['src'],
             }
-            urlopen('http://saveimage.sinaapp.com/?' + urlencode(data))
+            print(data)
     except HTTPError as e:
         pass
