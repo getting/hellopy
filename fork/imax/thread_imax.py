@@ -3,33 +3,38 @@
 @date 2014-03-1
 """
 
-
+import threading
+from queue import Queue
 from urllib.request import urlopen
 from urllib.error import HTTPError
 from bs4 import BeautifulSoup
-from pymongo import MongoClient
 
 
-class IMax():
+class UrlQueue():
     url = 'http://imax.im/movies/'
+    q = Queue()
+
+    def __init__(self, begin=1, end=100):
+        self.begin = begin
+        self.end = end
+
+        for i in range(self.begin, self.end):
+            self.q.put(self.url + str(i))
+
+urlqueue = UrlQueue()
+
+
+class IMax(threading.Thread):
     error_number = 0
 
-    def __init__(self, start=1, end=27000, save=False):
-        self.start = start
-        self.end = end
-        self.save = save
-        self.db = MongoClient().movie
-
-    def fork(self):
-        for i in range(self.start, self.end):
+    def run(self):
+        while not urlqueue.q.empty():
             movie = dict()
             try:
-                response = urlopen(self.url + str(i))
+                response = urlopen(urlqueue.q.get())
                 restlt = BeautifulSoup(response.read())
 
                 title = restlt.title.string
-                #title[:title.find('|')]
-                movie['id'] = i
                 movie['title'] = title.strip('| 高清 BT下载,电驴下载,迅雷下载,在线观看 | IMAX.im')
 
                 movie['db_id'] = restlt.find('div', class_='raters_count').a['href'].strip('http://movie.douban.com/subject/')
@@ -49,20 +54,15 @@ class IMax():
                             li['href'] = td.a['href']
                     download.append(li)
                 movie['download'] = download
-                if self.save:
-                    self.db.post.insert(movie)
                 print(movie)
             except AttributeError as attrerr:
-                self.error_number += 1
-                print(i, attrerr)
+                print(attrerr)
             except HTTPError as e:
                 self.error_number += 1
-                print(i, e)
-        print('*'*100)
-        print('发生错误:', self.error_number, '条')
-        print('*'*100)
+                print(e)
 
 
 if __name__ == '__main__':
-    imax = IMax(0, 46000)
-    imax.fork()
+    for j in range(30):
+        imax = IMax()
+        imax.start()
