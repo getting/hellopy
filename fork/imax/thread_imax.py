@@ -22,6 +22,7 @@ class UrlQueue():
             self.q.put(self.url + str(i))
 
 urlqueue = UrlQueue()
+print(urlqueue.q.qsize())
 
 
 class IMax(threading.Thread):
