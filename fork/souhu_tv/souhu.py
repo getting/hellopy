@@ -32,8 +32,7 @@ class GetUrl(Thread):
                     href = a['href']
                     pattern = re.compile(r'http://.*tv.sohu.com')
                     if pattern.match(href) is not None:
-                        pass
-                        print(href)
+                        # print(href)
                         self.queue.put(href)
                     else:
                         pass
@@ -62,7 +61,7 @@ if __name__ == '__main__':
     for i in range(10):
         getUrl = GetUrl()
         getUrl.start()
-    #
-    # for i in range(10):
-    #     tv = Tv()
-    #     tv.start()
+
+    for i in range(10):
+        tv = Tv()
+        tv.start()

@@ -1,4 +1,6 @@
 """ Fork IMax
+多线程版本
+！！！！！第一次用多线程，待完善
 
 @date 2014-03-1
 """
@@ -14,7 +16,7 @@ class UrlQueue():
     url = 'http://imax.im/movies/'
     q = Queue()
 
-    def __init__(self, begin=1, end=100):
+    def __init__(self, begin=1, end=10):
         self.begin = begin
         self.end = end
 
@@ -64,6 +66,6 @@ class IMax(threading.Thread):
 
 
 if __name__ == '__main__':
-    for j in range(30):
+    for j in range(10):
         imax = IMax()
         imax.start()
