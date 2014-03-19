@@ -46,24 +46,20 @@ class UrlCollector(Thread):
         aas = soup.find_all('a')
         #匹配所有 tv.sohu.com 下的url
         for a in aas:
-            try:
-                href = a['href']
-                if self.pattern.match(href) is not None:
-                    u_id = sha1(href.encode()).hexdigest()
-                    result = self.db.url.find_one({'id': u_id})
-                    if result:
-                        # print('链接已存在')
-                        pass
-                    else:
-                        # print(href)
-                        result = self.db.url.insert({'url': href, 'id': u_id})
-                        self.queue.put(href)
+            href = a.get('href', '')
+            if self.pattern.match(href) is not None:
+                u_id = sha1(href.encode()).hexdigest()
+                result = self.db.url.find_one({'id': u_id})
+                if result:
+                    print('链接已存在')
+                    # pass
                 else:
-                    pass
-                    # print(href)
-            except KeyError as e:
-                # print('no href', e)
-                pass
+                    print(href)
+                    result = self.db.url.insert({'url': href, 'id': u_id})
+                    self.queue.put(href)
+            else:
+                # pass
+                print(href)
 
     def run(self):
         while not self.queue.empty():
@@ -91,6 +87,6 @@ if __name__ == '__main__':
         urlCollector = UrlCollector()
         urlCollector.start()
 
-    for i in range(10):
-        tv = Tv()
-        tv.start()
+    # for i in range(10):
+    #     tv = Tv()
+    #     tv.start()

@@ -33,7 +33,6 @@
 ### 对于视频页面的分析
 
 div class=infoBox cfix  id=info
-
 <div class="info info-con">
 <div class="area cfix" id="content">
 
