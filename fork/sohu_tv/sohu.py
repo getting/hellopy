@@ -1,7 +1,6 @@
 """
 @date 2014-03-17
 """
-import time
 import re
 from hashlib import sha1
 from threading import Thread
@@ -13,7 +12,7 @@ from bs4 import BeautifulSoup
 
 
 # start_url = 'http://tv.sohu.com/'
-# #从此页抓取
+# 从此页抓取
 start_url = 'http://tv.sohu.com/map/'
 db = MongoClient().sohu
 queue = Queue()
