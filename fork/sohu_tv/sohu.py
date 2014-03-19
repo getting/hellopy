@@ -19,42 +19,57 @@ queue = Queue()
 queue.put(start_url)
 
 
-class GetUrl(Thread):
+class UrlCollector(Thread):
+    """广度优先收集url地址
+    """
+    pattern = re.compile(r'http://.*tv.sohu.com')
+
     def __init__(self):
         Thread.__init__(self)
         self.queue = queue
         self.db = db
 
+    def get_soup(self, url):
+        """获取页面 soup
+        """
+        try:
+            response = urlopen(url)
+            html = BeautifulSoup(response.read())
+            return html
+        except URLError as e:
+            print(e)
+
+    def fetch_urls(self, soup):
+        """从页面提取合法链接
+        过滤无用链接
+        """
+        aas = soup.find_all('a')
+        #匹配所有 tv.sohu.com 下的url
+        for a in aas:
+            try:
+                href = a['href']
+                if self.pattern.match(href) is not None:
+                    u_id = sha1(href.encode()).hexdigest()
+                    result = self.db.url.find_one({'id': u_id})
+                    if result:
+                        # print('链接已存在')
+                        pass
+                    else:
+                        # print(href)
+                        result = self.db.url.insert({'url': href, 'id': u_id})
+                        self.queue.put(href)
+                else:
+                    pass
+                    # print(href)
+            except KeyError as e:
+                # print('no href', e)
+                pass
+
     def run(self):
         while not self.queue.empty():
             url = self.queue.get()
-            try:
-                response = urlopen(url)
-            except URLError as e:
-                print(e, url)
-            soup = BeautifulSoup(response.read())
-            aas = soup.find_all('a')
-            #匹配所有 tv.sohu.com 下的url
-            pattern = re.compile(r'http://.*tv.sohu.com')
-            for a in aas:
-                try:
-                    href = a['href']
-                    if pattern.match(href) is not None:
-                        u_id = sha1(href.encode()).hexdigest()
-                        result = self.db.url.find_one({'id': u_id})
-                        if result:
-                            # print('链接已存在')
-                            pass
-                        else:
-                            # print(href)
-                            result = self.db.url.insert({'url': href, 'id': u_id})
-                            self.queue.put(href)
-                    else:
-                        pass
-                        # print(href)
-                except KeyError as e:
-                    # print('no href', e)
-                    pass
+            soup = self.get_soup(url)
+            self.fetch_urls(soup)
 
 
 class Tv(Thread):
@@ -73,8 +88,8 @@ class Tv(Thread):
 
 if __name__ == '__main__':
     for i in range(10):
-        getUrl = GetUrl()
-        getUrl.start()
+        urlCollector = UrlCollector()
+        urlCollector.start()
 
     for i in range(10):
         tv = Tv()
