@@ -44,21 +44,21 @@ class GetUrl(Thread):
                         u_id = sha1(href.encode()).hexdigest()
                         result = self.db.url.find_one({'id': u_id})
                         if result:
-                            print('链接已存在')
+                            # print('链接已存在')
+                            pass
                         else:
-                            print(href)
+                            # print(href)
                             result = self.db.url.insert({'url': href, 'id': u_id})
                             self.queue.put(href)
                     else:
                         pass
                         # print(href)
                 except KeyError as e:
-                    print('no href', e)
+                    # print('no href', e)
+                    pass
 
 
 class Tv(Thread):
-    db = MongoClient().souhu
-
     def __init__(self):
         Thread.__init__(self)
         self.queue = queue
@@ -68,17 +68,15 @@ class Tv(Thread):
         while not self.queue.empty():
             response = urlopen(self.queue.get())
             soup = BeautifulSoup(response.read())
-            player = soup.select('#playerBar')
-            print(player)
+            head = soup.head
+            print(head)
 
 
 if __name__ == '__main__':
-    for i in range(30):
+    for i in range(10):
         getUrl = GetUrl()
         getUrl.start()
+
+    for i in range(10):
         tv = Tv()
         tv.start()
-
-    # for i in range(30):
-    #     tv = Tv()
-    #     tv.start()
