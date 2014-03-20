@@ -8,18 +8,13 @@ class Parse():
     ('og:title', 'keywords', 'description', 'og:url', 'og:type', 'og:video', 'og:image') =>
     ('title', 'keywords', 'description', 'url', 'type', 'video', 'image')
     """
-    def __init__(self):
-        pass
-
     def parse(self, url):
         response = urlopen(url)
         soup = BeautifulSoup(response.read())
-        title = soup.title.string.strip(' - 搜狐视频')
         head = soup.head
-
         data = {}
         metas = head.find_all('meta')
-
+        #
         # for meta in metas:
         #     if meta.get('property') == 'og:title':
         #         data['title'] = meta.get('content').strip(' - 搜狐视频')
@@ -36,17 +31,17 @@ class Parse():
         #     elif meta.get('property') == 'og:image':
         #         data['image'] = meta.get('content')
 
-        #上面的更直观？
+        # #上面的更直观？
         for n, meta in enumerate(metas):
-            if meta.get('name') or meta.get('property') is None:
+            if meta.get('name') is None or meta.get('property') is None:
                 del metas[n]
 
-        data = {meta.get('name') if meta.get('name') is not None else meta.get('property').strip('og:'): meta['content']
+            data = {meta.get('name') if meta.get('name') is not None else meta.get('property').strip('og:'): meta['content']
                 for meta in metas}
 
         print(data)
 
-a = 'http://tv.sohu.com/20120412/n340313583.shtml'
+a = 'http://my.tv.sohu.com/us/50333101/61461681.shtml'
 
 if __name__ == '__main__':
     parse = Parse()

@@ -1,4 +1,6 @@
-"""
+"""搜狐视频爬虫
+
+
 @date 2014-03-17
 """
 import re
@@ -11,33 +13,46 @@ from pymongo import MongoClient
 from bs4 import BeautifulSoup
 
 
-# start_url = 'http://tv.sohu.com/'
-# 从此页抓取
-start_url = 'http://tv.sohu.com/map/'
-db = MongoClient().sohu
 queue = Queue()
-queue.put(start_url)
+tv_queue = Queue()
 
 
 class UrlCollector(Thread):
     """广度优先收集url地址
     """
+    #需要处理的url
     pattern = re.compile(r'http://.*tv.sohu.com')
 
-    def __init__(self):
+    #需要解析的url规则(需要加入tv_queue的url)
+    pattern2 = re.compile('http://.*tv.sohu.com(/us)?/\d*/n?\d*.shtml')
+
+    def __init__(self, start='http://tv.sohu.com'):
         Thread.__init__(self)
         self.queue = queue
-        self.db = db
+        self.tv_queue = tv_queue
+        self.db = MongoClient().sohu
 
-    def get_soup(self, url):
-        """获取页面 soup
+        #当数据库不存在任何链接时加入起始url,并加入队列
+        if not self.db.url.count():
+            self.insert_url(start)
+            self.queue.put(start)
+
+    def insert_url(self, url):
+        """将url插入数据库"""
+        self.db.url.insert({'url': url, 'id': self.hash_url(url)})
+
+    @staticmethod
+    def get_html(url):
+        """根据url获取整个页面
         """
-        try:
-            response = urlopen(url)
-            html = BeautifulSoup(response.read())
-            return html
-        except URLError as e:
-            print(e)
+        response = urlopen(url)
+        return response.read()
+
+    @staticmethod
+    def hash_url(url):
+        """对 url hash 处理
+        """
+        return sha1(url.encode()).hexdigest()
 
     def fetch_urls(self, soup):
         """从页面提取合法链接
@@ -48,45 +63,71 @@ class UrlCollector(Thread):
         for a in aas:
             href = a.get('href', '')
             if self.pattern.match(href) is not None:
-                u_id = sha1(href.encode()).hexdigest()
+                u_id = self.hash_url(href)
                 result = self.db.url.find_one({'id': u_id})
                 if result:
-                    print('链接已存在')
-                    # pass
+                    print('链接已存在', href)
                 else:
-                    print(href)
-                    result = self.db.url.insert({'url': href, 'id': u_id})
+                    print('添加链接', href)
+                    self.insert_url(href)
                     self.queue.put(href)
+
+                    if self.pattern2.match(href) is not None:
+                        self.tv_queue.put(href)
+
             else:
-                # pass
-                print(href)
+                print('无效链接', href)
 
     def run(self):
-        while not self.queue.empty():
+        while True:
             url = self.queue.get()
-            soup = self.get_soup(url)
+            print(self.getName(), url)
+            html = self.get_html(url)
+            soup = BeautifulSoup(html)
             self.fetch_urls(soup)
+            self.queue.task_done()
 
 
 class Tv(Thread):
     def __init__(self):
         Thread.__init__(self)
-        self.queue = queue
-        self.db = db
+        self.tv_queue = tv_queue
+        self.db = MongoClient().sohu
+
+    def parse(self, url):
+        """收集的信息
+        ('og:title', 'keywords', 'description', 'og:url', 'og:type', 'og:video', 'og:image') =>
+        ('title', 'keywords', 'description', 'url', 'type', 'video', 'image')
+        """
+        response = urlopen(url)
+        soup = BeautifulSoup(response.read())
+        head = soup.head
+        data = {}
+        metas = head.find_all('meta')
+        for n, meta in enumerate(metas):
+            if meta.get('name') is None or meta.get('property') is None:
+                del metas[n]
+
+            data = {meta.get('name') if meta.get('name') is not None else meta.get('property').strip('og:'): meta['content']
+                for meta in metas}
+        return data
 
     def run(self):
-        while not self.queue.empty():
-            response = urlopen(self.queue.get())
-            soup = BeautifulSoup(response.read())
-            head = soup.head
-            print(head)
+        while True:
+            url = self.tv_queue.get()
+            data = self.parse(url)
+            self.db.tv.insert(data)
+            self.tv_queue.task_done()
 
 
 if __name__ == '__main__':
+    start_url = 'http://tv.sohu.com/map/'
     for i in range(10):
-        urlCollector = UrlCollector()
-        urlCollector.start()
+        url_collector = UrlCollector(start_url)
+        url_collector.start()
 
-    # for i in range(10):
-    #     tv = Tv()
-    #     tv.start()
+    for j in range(10):
+        tv = Tv()
+        tv.start()
+
+    queue.join()
