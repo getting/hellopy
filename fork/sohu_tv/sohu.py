@@ -4,6 +4,7 @@
 @date 2014-03-17
 """
 import re
+import time
 from hashlib import sha1
 from threading import Thread
 from queue import Queue
@@ -11,10 +12,6 @@ from urllib.request import urlopen
 from urllib.error import HTTPError, URLError
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
-
-
-queue = Queue()
-tv_queue = Queue()
 
 
 class UrlCollector(Thread):
@@ -26,7 +23,7 @@ class UrlCollector(Thread):
     #需要解析的url规则(需要加入tv_queue的url)
     pattern2 = re.compile('http://.*tv.sohu.com(/us)?/\d*/n?\d*.shtml')
 
-    def __init__(self, start='http://tv.sohu.com'):
+    def __init__(self, queue, tv_queue, start='http://tv.sohu.com'):
         Thread.__init__(self)
         self.queue = queue
         self.tv_queue = tv_queue
@@ -80,12 +77,14 @@ class UrlCollector(Thread):
 
     def run(self):
         while True:
+            print('UrlCollector', self.getName(), self.queue.qsize())
             url = self.queue.get()
             print(self.getName(), url)
             html = self.get_html(url)
             soup = BeautifulSoup(html)
             self.fetch_urls(soup)
             self.queue.task_done()
+            time.sleep(1)
 
 
 class Tv(Thread):
@@ -94,11 +93,8 @@ class Tv(Thread):
         self.tv_queue = tv_queue
         self.db = MongoClient().sohu
 
-    def parse(self, url):
-        """收集的信息
-        ('og:title', 'keywords', 'description', 'og:url', 'og:type', 'og:video', 'og:image') =>
-        ('title', 'keywords', 'description', 'url', 'type', 'video', 'image')
-        """
+    @staticmethod
+    def parse(url):
         response = urlopen(url)
         soup = BeautifulSoup(response.read())
         head = soup.head
@@ -114,20 +110,25 @@ class Tv(Thread):
 
     def run(self):
         while True:
+            print('Tv', self.getName(), self.tv_queue.qsize())
             url = self.tv_queue.get()
             data = self.parse(url)
             self.db.tv.insert(data)
             self.tv_queue.task_done()
+            time.sleep(1)
 
 
 if __name__ == '__main__':
+    queue = Queue()
+    tv_queue = Queue()
     start_url = 'http://tv.sohu.com/map/'
-    for i in range(10):
+    for i in range(5):
         url_collector = UrlCollector(start_url)
         url_collector.start()
 
-    for j in range(10):
+    for j in range(5):
         tv = Tv()
         tv.start()
 
     queue.join()
+    tv_queue.join()
