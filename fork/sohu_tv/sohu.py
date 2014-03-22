@@ -15,10 +15,36 @@ import re
 from hashlib import sha1
 from threading import Thread
 from queue import Queue
-from urllib.request import urlopen
+from urllib.request import urlopen, Request
 from urllib.error import URLError
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
+
+
+header = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) '
+                  'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.101 Safari/537.36',
+    "Referer": 'http://www.google.com'
+}
+
+
+def get_html(url):
+    """根据url获取整个页面
+    如果大量抓取，最好添加代理
+    """
+    #设置User-Agent
+    req = Request(url, headers=header)
+    response = urlopen(req)
+    return response.read()
+
+
+def counter(name):
+    """用于产生自增id
+    参考：http://stackoverflow.com/questions/9938418/how-to-create-human-readable-id-in-mongodb
+    """
+    ret = MongoClient().sohu.counters.find_and_modify(query={'id': name}, update={'$inc': {'next': 1}},
+                                                      upsert=True, new=True)
+    return ret['next']
 
 
 class UrlCollector(Thread):
@@ -44,13 +70,6 @@ class UrlCollector(Thread):
     def insert_url(self, url):
         """将url插入数据库"""
         self.db.url.insert({'url': url, 'id': self.hash_url(url)})
-
-    @staticmethod
-    def get_html(url):
-        """根据url获取整个页面
-        """
-        response = urlopen(url)
-        return response.read()
 
     @staticmethod
     def hash_url(url):
@@ -88,7 +107,7 @@ class UrlCollector(Thread):
             try:
                 url = self.queue.get()
                 print(self.getName(), url)
-                html = self.get_html(url)
+                html = get_html(url)
                 soup = BeautifulSoup(html)
                 self.fetch_urls(soup)
                 self.queue.task_done()
@@ -127,6 +146,8 @@ class Tv(Thread):
             try:
                 url = self.tv_queue.get()
                 data = self.parse(url)
+                #自增id
+                data['id'] = counter('tv')
                 self.db.tv.insert(data)
                 self.tv_queue.task_done()
             except URLError:
@@ -140,11 +161,11 @@ if __name__ == '__main__':
     start_url = 'http://tv.sohu.com/map/'
 
     for i in range(10):
-        url_collector = UrlCollector(start_url)
+        url_collector = UrlCollector(queue, tv_queue, start_url)
         url_collector.start()
 
     for j in range(20):
-        tv = Tv()
+        tv = Tv(tv_queue)
         tv.start()
 
     queue.join()
