@@ -24,31 +24,11 @@ url   存储已经收集到的地址：主要用于比对和去重，防止重�
 
 tv    用于存储获取的视频信息
 
-由于视频分类不同，对于一般的视频信息采集，页面head部分的信息已经足够丰富，如果需要，大概
-    ### 对于视频页面的分析
+body部分不同频道结构不够统一，对于一般的视频信息采集，页面head部分的信息已经足够丰富。如果需要更详尽的信息大概主要可从下面这些片段提取信息。
 
-    div class=infoBox cfix  id=info
+    <div class="infoBox cfix  id=info">
     <div class="info info-con">
     <div class="area cfix" id="content">
-
-    <meta http-equiv="content-type" content="text/html; charset=GBK" />
-<meta name="keywords" content="" />
-<meta name="description" content="《中国梦之声》20130825 总决选,《中国梦之声》是东方卫视引进世界《偶像Idol》版权所打造的中国电视史上最强的超大型歌唱选秀节目。该节目将于5月19日登陆东方卫视。这也是中国所引进的最大规模、最具影响力的电视真人秀节目。由李玟、韩红、黄晓明、王伟忠四人担任该节目明星导师，为中国乐坛的发展选拔一批怀揣梦想、具有天赋才华的音乐人，树立中国电视音乐节目的新..." />
-<meta name="robots" content="all" />
-<meta name="album" content="中国梦之声" />
-<meta name="category" content="综艺" />
-<meta property="og:videosrc" content="http://share.vrs.sohu.com/1291150/v.swf&autoplay=false" />
-<meta property="og:url" content="http://tv.sohu.com/20130826/n385016735.shtml"/>
-<meta property="og:type" content="video"/>
-<meta property="og:video" content="http://share.vrs.sohu.com/1291150/v.swf&autoplay=false"/>
-<meta property="og:video:type" content="application/x-shockwave-flash"/>
-<meta property="og:site_name" content="搜狐视频" />
-<meta property="og:title" content="《中国梦之声》20130825 总决选 - 搜狐视频" />
-<meta property="og:image" content="http://photocdn.sohu.com/20130826/vrsb941518.jpg" />
-<meta name="mobile-agent" content="format=html5;url=http://m.tv.sohu.com/20130826/n385016735.shtml">
-
-
-
 
 
 线程需要处理的url加入队列，减少自行加锁的复杂
@@ -72,17 +52,10 @@ queue_tv  需要提取视频信息的url队列
 
 按url类型，用户上传，和光放上传，或按照时期进行切分，分布到不同的机器上处理
 
+
 崩溃后的恢复？
-设置连接超时，在第一次超时后重新尝试链接？
 所有已经遍历的地址存储在数据库中在一个地址被成功处理后可以做一条标记，在崩溃后重新从未标记的位置开始搜索。
 
-
-
-
-页面body部分信息不够统一，重要信息在head中已经包含
-页面信息直接从head获取
-
-从http://tv.sohu.com 或 http://tv.sohu.com/map 开始抓取，似乎没有大的区别，
 
 
 
@@ -102,13 +75,14 @@ queue_tv  需要提取视频信息的url队列
 
 
 
-视频总数估算
+# 视频总数估算
 
-百度搜索 site:tv.sohu.com
-83,100,000
+搜狐视频
 
-Google
-17,300,000
+site:tv.sohu.com
+
+Baidu: 83,100,000
+Google：17,300,000
 
 
 独立的视频页面（扣除各种主页目录，分类，分页页面等）
@@ -118,23 +92,23 @@ Google
 1000 00000
 
 
-当前中文维基百科在各语言维基百科条目数排名中列第15名，目前已拥有757,023条条目。
-页面：3,348,660
-site:zh.wikipedia.org
-Google  2,000,000
-Baidu 13,400,000
+维基百科
 
-http://zh.wikipedia.org/wiki/Special:%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF
+当前中文维基百科在各语言维基百科条目数排名中列第15名，目前已拥有757,023条条目。页面：3,348,660
+（http://zh.wikipedia.org/wiki/Special:%E7%BB%9F%E8%AE%A1%E4%BF%A1%E6%81%AF）
+
+site:zh.wikipedia.org
+Baidu   13,400,000
+Google  2,000,000
 
 
 site:en.wikipedia.org
 
-Google 找到约 14,100,000 条结果 （用时 0.28 秒）
-Baidu 找到相关结果数23,200,000个。
+Baidu：  23,200,000
+Google： 14,100,000
 
-Pages
-(All pages in the wiki, including talk pages, redirects, etc.)	32,489,471
 
+Pages (All pages in the wiki, including talk pages, redirects, etc.)	32,489,471
 Content pages	4,476,861
 
 
