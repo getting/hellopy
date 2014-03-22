@@ -55,3 +55,32 @@ div class=infoBox cfix  id=info
 
 用户上传的视频：http://my.tv.sohu.com/us/200430155/63582287.shtml
 用户id + 编号
+
+
+崩溃后恢复
+
+
+
+视频总数估算
+
+百度搜索 site:tv.sohu.com
+83,100,000
+
+Google
+17,300,000
+
+
+独立的视频页面（扣除各种主页目录，分类，分页页面等）
+
+3000 00000   / 3
+
+1000 00000
+
+
+site:the5fire.com
+
+470 篇博客
+
+Baidu 204
+Google 收录2,210
+
