@@ -1,12 +1,12 @@
 """搜狐视频爬虫，获取视频信息
 采用广度优先策略进行爬取，维护两个队列，一个用于存放待爬取的url地址，一个用于存放待提取信息的视频url地址。
-使用MongoDB存储已经爬取得地址，用于比对去重，url存储时进行hash（即存原始地址，又存hash值方便去重时比对）。
+使用MongoDB存储已经爬取得地址，用于比对去重，url存储时进行hash（既存原始地址，又存hash值方便去重时比对）。
 
-为提高性能，对于已经爬取得地址，可以用redis代替MongoDB进行存储
+为提高性能，对于已经爬取得地址，可以用redis代替MongoDB进行存储?
 
 测试环境 ubuntu 13.10 + python3.3.2
 
-声明： 爬虫仅用于学习研究，切勿用于其他用途
+！声明： 爬虫仅用于学习研究，勿用于其他用途
 
 @author imaguowei@gmail.com
 @date 2014-03-17
@@ -21,12 +21,6 @@ from urllib.error import URLError
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
 
-#获得url队列
-queue = Queue()
-#需要提取视频信息的url队列
-tv_queue = Queue()
-#用于计数的队列
-queue_count = Queue()
 
 header = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64) '
@@ -61,15 +55,16 @@ class UrlCollector(Thread):
     pattern = re.compile(r'http://.*tv.sohu.com')
 
     #需要提取内容的url规则(加入tv_queue)
-    pattern2 = re.compile('http://.*tv.sohu.com(/us)?/\d*/n?\d*.shtml')
+    pattern2 = re.compile(r'http://.*tv.sohu.com(/us)?/\d*/n?\d*.shtml')
 
-    def __init__(self, start='http://tv.sohu.com'):
+    def __init__(self, queue, tv_queue, count_queue, start='http://tv.sohu.com'):
         Thread.__init__(self)
         self.queue = queue
         self.tv_queue = tv_queue
+        self.count_queue = count_queue
         self.db = MongoClient().sohu
 
-        #当数据库不存在任何链接时加入起始url,并加入队列
+        #当数据库不存在任何链接时加入起始种子url,并加入队列
         if not self.db.url.count():
             self.insert_url(start)
             self.queue.put(start)
@@ -109,8 +104,12 @@ class UrlCollector(Thread):
                 print('无效链接', href)
 
     def run(self):
-        while queue_count.empty() is False:
+        while True:
             print('UrlCollector', self.getName(), self.queue.qsize())
+            # tv_queue大于阈值等待直到Tv将其处理完成，或者count_queue清空，随主线程一同退出，阈值需要更加精心的设置
+            # if self.tv_queue.qsize() > 100:
+            #     print('collector 等待tv处理')
+            #     self.tv_queue.join()
             try:
                 url = self.queue.get()
                 print(self.getName(), url)
@@ -124,9 +123,10 @@ class UrlCollector(Thread):
 class Tv(Thread):
     """处理queue_tv队列,提取视频信息
     """
-    def __init__(self):
+    def __init__(self, tv_queue, count_queue):
         Thread.__init__(self)
         self.tv_queue = tv_queue
+        self.count_queue = count_queue
         self.db = MongoClient().sohu
 
     @staticmethod
@@ -147,9 +147,8 @@ class Tv(Thread):
         return data
 
     def run(self):
-        while queue_count.empty() is False:
-            co = queue_count.get(timeout=5)
-            print(co)
+        while self.count_queue.empty() is False:
+            self.count_queue.get()
             print('Tv', self.getName(), self.tv_queue.qsize())
             try:
                 url = self.tv_queue.get()
@@ -157,7 +156,7 @@ class Tv(Thread):
                 #自增id
                 data['id'] = counter('tv')
                 self.db.tv.insert(data)
-                queue_count.task_done()
+                self.count_queue.task_done()
             except URLError:
                 continue
 
@@ -166,22 +165,29 @@ if __name__ == '__main__':
     #起始种子地址
     start_url = 'http://tv.sohu.com/map/'
     #设置要抓取视频信息的数目
-    video_num = 200
+    video_num = 300
+
+    #获得url队列
+    queue = Queue()
+    #需要提取视频信息的url队列
+    tv_queue = Queue()
+    #用于计数的队列
+    count_queue = Queue()
 
     for c in range(video_num):
-        queue_count.put(c)
+        count_queue.put(c)
 
-    for i in range(2):
-        url_collector = UrlCollector(start_url)
+    for i in range(3):
+        url_collector = UrlCollector(queue, tv_queue, count_queue, start_url)
         #随主线程一同结束，下同
         url_collector.daemon = True
         url_collector.start()
 
-    for j in range(20):
-        tv = Tv()
+    for j in range(5):
+        tv = Tv(tv_queue, count_queue)
         tv.daemon = True
         tv.start()
 
     #阻塞直到计数队列为空
-    queue_count.join()
+    count_queue.join()
     print('<<<<<<<<<<<<<<<<任务结束>>>>>>>>>>>>>>>>>>>>>>')
