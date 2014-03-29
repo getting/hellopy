@@ -2,7 +2,7 @@ window.onload = init;
 
 function init() {
     var username = prompt("输入用户名", '匿名')
-    var webSocketUri = "ws://localhost:10005/talk";
+    var webSocketUri = "ws://localhost:8000/talk";
     var input = document.getElementById('input');
     var socket = new WebSocket(webSocketUri);
 
