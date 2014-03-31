@@ -17,7 +17,6 @@ from hashlib import sha1
 from threading import Thread
 from queue import Queue
 from urllib.request import urlopen, Request
-from urllib.error import URLError
 from pymongo import MongoClient
 from bs4 import BeautifulSoup
 
