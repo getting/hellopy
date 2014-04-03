@@ -20,3 +20,6 @@ if __name__ == '__main__':
     print(next(f))
     print(next(f))
     print(next(f))
+
+    s = sum(list(fib(1000000)))
+    print(s)
