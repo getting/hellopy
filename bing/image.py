@@ -71,4 +71,3 @@ if __name__ == '__main__':
     print(bing.get_copyright_link())
     print(bing.get_date())
     print(bing.get_json_format())
-

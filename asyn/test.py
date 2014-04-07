@@ -16,12 +16,12 @@ class IndexHandler(tornado.web.RequestHandler):
         url = 'http://localhost:10002'
 
         #同步
-        client = HTTPClient()
-        response = client.fetch(url)
+        # client = HTTPClient()
+        # response = client.fetch(url)
 
         #异步
-        # client = AsyncHTTPClient()
-        # response = yield tornado.gen.Task(client.fetch, url)
+        client = AsyncHTTPClient()
+        response = yield tornado.gen.Task(client.fetch, url)
 
         self.write(response.body.decode())
         self.finish()
